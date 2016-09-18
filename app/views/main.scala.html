@@ -1,0 +1,50 @@
+@import utils.ClusterHealth
+@(service: String, state: Seq[(String, Either[String, Option[ClusterHealth]])], status: String)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        @* Here's where we render the page title `String`. *@
+        <title>@service</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+        <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        <h1>@service</h1>
+        <h2>Currently reporting: </h2>
+
+        <p>@status</p>
+        @for(members <- state) {
+                @if(members._2.isLeft) {
+                   <h3>@members._1 : @members._2.left.get</h3>
+                } else {
+                    @if(members._2.right.get.isDefined){
+                        <h3>Pod IP: @members._1 : Size of cluster - @members._2.right.get.get.clustermembers</h3>
+                        @if(members._2.right.get.get.members.isEmpty && members._2.right.get.get.unreachable.isEmpty){
+                            <p>Pod is returning no reachable members or unreachable members</p>
+                        } else {
+                            @if( members._2.right.get.get.members.nonEmpty) {
+                                <p>Reachable Members</p>
+                                <ul>
+                                @for(clusterMembers <- members._2.right.get.get.members) {
+                                    <li>Member: @clusterMembers.address - Status @clusterMembers.status</li>
+                                }
+                                </ul>
+                            }
+                            @if( members._2.right.get.get.unreachable.nonEmpty) {
+                                <p>Uneachable Members</p>
+                                <ul>
+                                @for(clusterMembers <- members._2.right.get.get.unreachable) {
+                                    <li>Member: @clusterMembers.address - Status @clusterMembers.status</li>
+                                }
+                                </ul>
+                            }
+                        }
+                    } else {
+                        <h3>Pod IP: @members._1 is returning invalid JSON</h3>
+                    }
+                }
+            }
+    </body>
+</html>
