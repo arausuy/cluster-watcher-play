@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
 
 dockerRepository := Some("docker-local.artifactory.virtuefusion.corp/virtuefusion")
 
-dockerBaseImage := "docker-local.artifactory.virtuefusion.corp/virtuefusion/vf_rhel7-java:1.7.0"
+dockerBaseImage := "docker-local.artifactory.virtuefusion.corp/virtuefusion/vf_rhel7-java:1.5.0"
 
 bashScriptExtraDefines ++= IO.readLines(baseDirectory.value / "scripts" / "env.sh")
 
